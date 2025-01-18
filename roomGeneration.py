@@ -1,24 +1,20 @@
 import random
 from classes import *
 
-def generateNodes():
-    nodes:Node = []
-    for i in range(20):
-        newNode = Node(None, None, None, None, None)
-        nodes.append(newNode)
-    
-    for node in nodes:
-        node.n = getRandomNodeId(nodes)
-        node.e = getRandomNodeId(nodes)
-        node.s = getRandomNodeId(nodes)
-        node.n = getRandomNodeId(nodes)
-
-    placeNodeItems(nodes)
-    return nodes
-
 def getRandomNodeId(nodes):
     num = random.randrange(0, 19)
     return nodes[num].id
+
+def generateNodes():
+    #initalize nodes
+    nodes = [Node(None, None, None, None, None) for _ in range(20)]
+    for node in nodes:
+        directions = ["w", "n", "e", "s"]
+        for dir in directions:
+            setattr(node, dir, getRandomNodeId(nodes))
+
+    placeNodeItems(nodes)
+    return nodes
 
 randomItem = lambda outcomes, prob: random.choices(outcomes, weights=prob, k=1)[0]
 def placeNodeItems(nodes):
@@ -38,5 +34,3 @@ def placeNodeItems(nodes):
     for node in nodes:
         if node.item == None: 
             node.item = Entity(node.id, randomItem(outcomes, prob)[0]) 
-
-
