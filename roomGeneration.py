@@ -11,7 +11,11 @@ def generateNodes():
     for node in nodes:
         directions = ["w", "n", "e", "s"]
         for dir in directions:
-            setattr(node, dir, getRandomNodeId(nodes))
+            nodeId =  getRandomNodeId(nodes)
+            #node cant connect to itself
+            while nodeId == node.id:
+                nodeId =  getRandomNodeId(nodes)
+            setattr(node, dir,)
 
     placeNodeItems(nodes)
     return nodes
@@ -19,7 +23,7 @@ def generateNodes():
 randomItem = lambda outcomes, prob: random.choices(outcomes, weights=prob, k=1)[0]
 def placeNodeItems(nodes):
     outcomes = ["B", "H", "N"] #B = bat. H = hole. N = none
-    prob = [0.1, 0.05, 0.85] #probability of each outcome
+    prob = [0.25, 0.15, 0.6] #probability of each outcome
 
     #place player and wumpus first
     playerPos = random.randrange(0, 19)

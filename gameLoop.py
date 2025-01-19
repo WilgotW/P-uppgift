@@ -1,8 +1,8 @@
 from classes import * 
 
-def getNodeItem(nodes:Node, id):
-    node = next((n for n in nodes if n.id and n.id == id), None)
-    return node.item
+def getNodeItem(nodes, id):
+    node = next((n for n in nodes if n.id == id), None)
+    return node.item if node else None
 
 def startMessages():
     print("Wumpus")
@@ -11,36 +11,62 @@ def startGame(nodes, player, wumpus):
     startMessages()
     playerAction(nodes, player)
 
-
 def printItemMessage(item):
     match str(item):
         case "W":
             print("Jag känner lukten av Wumpus!")
         case "B":
             print("Jag hör fladdermöss!")
-        case "W":
+        case "H":  
             print("Jag känner vinddrag!")
 
-def playerAction(nodes, player:Node):
-    directions = ["n", "e", "s", "w"]
-    for dir in directions:
-        nodeItem = getNodeItem(nodes, getattr(player, dir))
-        printItemMessage(nodeItem)
-    
-    print("Vad vill du göra:")
-    print("1. Rör dig")
-    print("2. Skjut")
-    decision = input()
+def playerAction(nodes, player):
+    while True:
+        for n in nodes:
+            print(f"Node ID: {n.id}, Item: {n.item.__dict__ if n.item else 'None'}")
 
-    while not decision == "1" and not decision == "2":
-        print("Fel inmatning")
+        directions = ["n", "e", "s", "w"]
+        for dir in directions:
+            nodeItem = getNodeItem(nodes, getattr(player, dir))
+            printItemMessage(nodeItem)
+        
+        print("Vad vill du göra:")
         print("1. Rör dig")
         print("2. Skjut")
         decision = input()
 
-    if decision == 1:
-        print()
+        while decision not in ["1", "2"]:
+            print("Fel inmatning")
+            print("1. Rör dig")
+            print("2. Skjut")
+            decision = input()
 
+        if decision == "1":
+            player = playerMove(nodes, player)  
 
-def playerMove():
-    print("Vilket håll?")
+def playerMove(nodes, player):
+    directions = ["n", "e", "s", "w"]
+    print("Vilket håll? n/e/s/w")
+    direction = input().strip().lower()
+
+    while direction not in directions:
+        print("Fel inmatning")
+        print("Vilket håll? n/e/s/w")
+        direction = input().strip().lower()
+    
+    target_node_id = getattr(player, direction)
+    target_node = next((n for n in nodes if n.id == target_node_id), None)
+
+    collisionItem = getNodeItem(nodes, target_node_id)
+
+    if str(collisionItem) == "N":
+        for node in nodes:
+            if node.id == player.id:
+                node.item = Entity(node.id, "N")  
+            if node.id == target_node_id:
+                node.item = Entity(node.id, "P")  
+        player.id = target_node_id 
+        return player  
+    else:
+        print(f"Du gick in i: {collisionItem}")
+        return player 
