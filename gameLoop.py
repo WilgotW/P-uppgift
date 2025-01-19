@@ -1,8 +1,13 @@
 from classes import * 
+import os
 
 def getNodeItem(nodes, id):
     node = next((n for n in nodes if n.id == id), None)
     return node.item if node else None
+
+def getNode(nodes, id):
+    node = next((n for n in nodes if n.id == id), None)
+    return node if node else None
 
 def startMessages():
     print("Wumpus")
@@ -22,13 +27,15 @@ def printItemMessage(item):
 
 def playerAction(nodes, player):
     while True:
-        for n in nodes:
-            print(f"Node ID: {n.id}, Item: {n.item.__dict__ if n.item else 'None'}")
+        os.system('clear')
+        # for n in nodes:
+        #     print(f"Node ID: {n.id}, Item: {n.item.__dict__ if n.item else 'None'}")
 
         directions = ["n", "e", "s", "w"]
         for dir in directions:
             nodeItem = getNodeItem(nodes, getattr(player, dir))
-            printItemMessage(nodeItem)
+            print("rum: " + str(nodes.index(getNode(nodes, getattr(player, dir)))))
+            #printItemMessage(nodeItem)
         
         print("Vad vill du göra:")
         print("1. Rör dig")
@@ -55,18 +62,18 @@ def playerMove(nodes, player):
         direction = input().strip().lower()
     
     target_node_id = getattr(player, direction)
-    target_node = next((n for n in nodes if n.id == target_node_id), None)
+    target_node = getNode(nodes, target_node_id)
 
     collisionItem = getNodeItem(nodes, target_node_id)
 
-    if str(collisionItem) == "N":
+    if collisionItem and collisionItem.entityType in ["N", None]: 
         for node in nodes:
             if node.id == player.id:
-                node.item = Entity(node.id, "N")  
+                node.item = Entity(node.id, "N") 
             if node.id == target_node_id:
-                node.item = Entity(node.id, "P")  
-        player.id = target_node_id 
-        return player  
+                node.item = Entity(node.id, "P")
+        player.id = target_node_id
+        return player
     else:
-        print(f"Du gick in i: {collisionItem}")
-        return player 
+        print(f"Du gick in i: {collisionItem.entityType if collisionItem else 'None'}")
+        return player

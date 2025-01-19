@@ -6,16 +6,15 @@ def getRandomNodeId(nodes):
     return nodes[num].id
 
 def generateNodes():
-    #initalize nodes
-    nodes = [Node(None, None, None, None, None) for _ in range(20)]
+    nodes = [Node(i, None, None, None, None) for i in range(20)]
+
     for node in nodes:
         directions = ["w", "n", "e", "s"]
         for dir in directions:
-            nodeId =  getRandomNodeId(nodes)
-            #node cant connect to itself
+            nodeId = getRandomNodeId(nodes)
             while nodeId == node.id:
-                nodeId =  getRandomNodeId(nodes)
-            setattr(node, dir,)
+                nodeId = getRandomNodeId(nodes)
+            setattr(node, dir, nodeId)
 
     placeNodeItems(nodes)
     return nodes
