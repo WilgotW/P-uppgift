@@ -1,9 +1,9 @@
 import random
 
 class Node:
-    def __init__(self, item, n, e, s, w):
-        self.id = random.random()
-        self.item = None
+    def __init__(self,id, item, n, e, s, w):
+        self.id = id
+        self.item = item
         self.n = n
         self.e = e
         self.s = s

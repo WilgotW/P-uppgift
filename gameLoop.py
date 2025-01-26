@@ -25,17 +25,34 @@ def printItemMessage(item):
         case "H":  
             print("Jag känner vinddrag!")
 
+def printMap(nodes:Node):
+    print("\n \n")
+    # os.system('clear')
+    for i in range(len(nodes)):
+        if (i) % 4 == 0:
+            print()
+        print(nodes[i].item, end="   ")
+    
+    print("\n \n")
+    input()
+
 def playerAction(nodes, player):
     while True:
-        os.system('clear')
+        # os.system('clear')
+      
         # for n in nodes:
         #     print(f"Node ID: {n.id}, Item: {n.item.__dict__ if n.item else 'None'}")
-
+        printMap(nodes)
+        print("Härifrån kan man komma till rum: ", end="")
         directions = ["n", "e", "s", "w"]
         for dir in directions:
-            nodeItem = getNodeItem(nodes, getattr(player, dir))
-            print("rum: " + str(nodes.index(getNode(nodes, getattr(player, dir)))))
+            nodeId = getattr(player, dir)
+            nodeItem = getNodeItem(nodes, nodeId)
+            # print(str(nodes.index(getNode(nodes, getattr(player, dir)))), end=", ")
+            print(nodeId, end=", ")
+
             #printItemMessage(nodeItem)
+        print()
         
         print("Vad vill du göra:")
         print("1. Rör dig")
@@ -61,19 +78,24 @@ def playerMove(nodes, player):
         print("Vilket håll? n/e/s/w")
         direction = input().strip().lower()
     
-    target_node_id = getattr(player, direction)
-    target_node = getNode(nodes, target_node_id)
+    targetNodeId = getattr(player, direction)
+    targetNode = getNode(nodes, targetNodeId)
 
-    collisionItem = getNodeItem(nodes, target_node_id)
+    collisionItem = getNodeItem(nodes, targetNodeId)
 
     if collisionItem and collisionItem.entityType in ["N", None]: 
         for node in nodes:
             if node.id == player.id:
                 node.item = Entity(node.id, "N") 
-            if node.id == target_node_id:
+            if node.id == targetNodeId:
                 node.item = Entity(node.id, "P")
-        player.id = target_node_id
+                print(f"Du gick in i rum: {node.id}")
+        player.id = targetNodeId
+        input("...")
         return player
     else:
-        print(f"Du gick in i: {collisionItem.entityType if collisionItem else 'None'}")
+        print(f"Du gick in i: {collisionItem.entityType}")
         return player
+    
+
+def collisionEvent(nodes, collisionItem):
