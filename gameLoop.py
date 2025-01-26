@@ -1,5 +1,10 @@
 from classes import * 
+from globalVariables import *
 import os
+
+def getRandomNode(nodes):
+    num = random.randrange(0, NODE_COUNT - 1)
+    return nodes[num]
 
 def getNodeItem(nodes, id):
     node = next((n for n in nodes if n.id == id), None)
@@ -37,7 +42,7 @@ def printMap(nodes:Node):
     input()
 
 def playerAction(nodes, player):
-    while True:
+    while not gameState.gameOver:
         # os.system('clear')
       
         # for n in nodes:
@@ -94,18 +99,34 @@ def playerMove(nodes, player):
         input("...")
         return player
     else:
-        collisionEvent(nodes, collisionItem.entityType)
+        player = collisionEvent(nodes, collisionItem.entityType, player)
         return player
     
 
-def collisionEvent(nodes, collisionItem):
+def collisionEvent(nodes, collisionItem, player):
     print(f"Du gick in i: {collisionItem}")
-    
+    input()
     match collisionItem:
         case "W":
             print("Du blev uppäten av Wumpus...")
+            gameState.gameOver = True
         case "H":
             print("Du föll ner i ett bottenlöst hål...")
+            gameState.gameOver = True
+        case "B":
+            print("Du känner fladdermusvingar mot kinden och lyfts uppåt")
+            for node in nodes:
+                if node.id == player.id:
+                    node.item = Entity(node.id, "N") 
+            node = getRandomNode(nodes)
+            while not node.item.entityType == "N":
+                node = getRandomNode(nodes)
+
+            node.item = Entity(node.id, "P")
+            player.id = node.id
+            print(f"du landade i rum: {node.id}")
+            return player
+
 
 
 

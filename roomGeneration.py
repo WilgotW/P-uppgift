@@ -1,7 +1,6 @@
 import random
 from classes import *
-
-NODE_COUNT = 20
+from globalVariables import *
 
 def getRandomNodeId(nodes):
     num = random.randrange(0, NODE_COUNT - 1)
