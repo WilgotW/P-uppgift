@@ -94,8 +94,18 @@ def playerMove(nodes, player):
         input("...")
         return player
     else:
-        print(f"Du gick in i: {collisionItem.entityType}")
+        collisionEvent(nodes, collisionItem.entityType)
         return player
     
 
 def collisionEvent(nodes, collisionItem):
+    print(f"Du gick in i: {collisionItem}")
+    
+    match collisionItem:
+        case "W":
+            print("Du blev uppäten av Wumpus...")
+        case "H":
+            print("Du föll ner i ett bottenlöst hål...")
+
+
+

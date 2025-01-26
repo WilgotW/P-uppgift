@@ -18,3 +18,7 @@ class Entity:
     def __str__(self):
         return self.entityType
        
+
+class GameState:
+    def __init__(self):
+        self.gameOver = False
