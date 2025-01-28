@@ -21,9 +21,9 @@ def generateNodes():
     placeNodeItems(nodes)
     return nodes
 
-randomItem = lambda outcomes, prob: random.choices(outcomes, weights=prob, k=1)[0]
+randomItem = lambda outcomes, prob: random.choices(outcomes, weights=prob, k=1)
 def placeNodeItems(nodes):
-    outcomes = ["B", "H", "N"] #B = bat. H = hole. N = none
+    outcomes = [["B",  "Jag hör fladdermöss!"], ["H", "Jag känner vinddrag!"], ["N", ""]] #B = bat. H = hole. N = none
     prob = [0.15, 0.05, 0.8] #probability of each outcome
 
     #place player and wumpus first
@@ -33,9 +33,10 @@ def placeNodeItems(nodes):
     wumpusPos = random.randrange(0, NODE_COUNT - 1)
     while wumpusPos == playerPos:
         wumpusPos = random.randrange(0, NODE_COUNT - 1)
-    nodes[wumpusPos].item = Entity(nodes[wumpusPos].id, "W")
+    nodes[wumpusPos].item = Entity(nodes[wumpusPos].id, "W", "Du känner lukten av wumpus!")
 
     # place remaining items:
     for node in nodes:
         if node.item == None: 
-            node.item = Entity(node.id, randomItem(outcomes, prob)[0]) 
+            item = randomItem(outcomes, prob)
+            node.item = Entity(node.id, item[0][0], item[0][1]) 

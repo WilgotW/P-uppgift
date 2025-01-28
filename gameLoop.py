@@ -48,9 +48,12 @@ def playerAction(nodes, player):
         # for n in nodes:
         #     print(f"Node ID: {n.id}, Item: {n.item.__dict__ if n.item else 'None'}")
         printMap(nodes)
+
+        checkSurroundingNodes(nodes, player)
+        print(f"du befinner dig i rum: {player.id}")
+
         print("Härifrån kan man komma till rum: ", end="")
-        directions = ["n", "e", "s", "w"]
-        for dir in directions:
+        for dir in ["n", "e", "s", "w"]:
             nodeId = getattr(player, dir)
             nodeItem = getNodeItem(nodes, nodeId)
             # print(str(nodes.index(getNode(nodes, getattr(player, dir)))), end=", ")
@@ -62,9 +65,10 @@ def playerAction(nodes, player):
         print("Vad vill du göra:")
         print("1. Rör dig")
         print("2. Skjut")
+        print("3. debug")
         decision = input()
 
-        while decision not in ["1", "2"]:
+        while decision not in ["1", "2", "3"]:
             print("Fel inmatning")
             print("1. Rör dig")
             print("2. Skjut")
@@ -72,6 +76,9 @@ def playerAction(nodes, player):
 
         if decision == "1":
             player = playerMove(nodes, player)  
+        
+        if decision == "3":
+            print(f"__rum: {player.w}")
 
 def playerMove(nodes, player):
     directions = ["n", "e", "s", "w"]
@@ -88,7 +95,7 @@ def playerMove(nodes, player):
 
     collisionItem = getNodeItem(nodes, targetNodeId)
 
-    if collisionItem and collisionItem.entityType in ["N", None]: 
+    if collisionItem and collisionItem.entityType == "N" : 
         for node in nodes:
             if node.id == player.id:
                 node.item = Entity(node.id, "N") 
@@ -126,6 +133,14 @@ def collisionEvent(nodes, collisionItem, player):
             player.id = node.id
             print(f"du landade i rum: {node.id}")
             return player
+
+def checkSurroundingNodes(nodes, player):
+    for dir in ["n", "e", "s", "w"]:
+        nodeId = getattr(player, dir)
+        node = getNodeItem(nodes, nodeId)
+        if not node.entityType == "N":
+            #node contains item
+            print(node.entityMessage, end="\n")
 
 
 

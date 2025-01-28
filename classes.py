@@ -11,10 +11,12 @@ class Node:
     def __str__(self):
         return f"id: {self.id} item:{str(self.item)} w: {self.w} n: {self.n} s: {self.s} e: {self.e}"
 
+
 class Entity:
-    def __init__(self, position, entityType):
+    def __init__(self, position, entityType, entityMessage = ""):
         self.position = position
         self.entityType = entityType
+        self.entityMessage = entityMessage 
     def __str__(self):
         return self.entityType
        
