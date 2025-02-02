@@ -6,7 +6,7 @@ def getRandomNodeId(nodes):
     num = random.randrange(0, NODE_COUNT - 1)
     return nodes[num].id
 
-def generateNodes():
+def generateNodes(difficulty):
     nodes = [Node(i + 1, None, None, None, None, None) for i in range(NODE_COUNT)]
 
     for node in nodes:
@@ -17,13 +17,19 @@ def generateNodes():
                 nodeId = getRandomNodeId(nodes)
             setattr(node, dir, nodeId)
 
-    placeNodeItems(nodes)
+    placeNodeItems(nodes, difficulty)
     return nodes
 
 randomItem = lambda outcomes, prob: random.choices(outcomes, weights=prob, k=1)
-def placeNodeItems(nodes):
+def placeNodeItems(nodes, difficulty):
     outcomes = [["B",  "Jag hör fladdermöss!"], ["H", "Jag känner vinddrag!"], ["N", ""]] #B = bat. H = hole. N = none
-    prob = [0.15, 0.05, 0.8] #probability of each outcome
+    prob = []#probability of each outcome
+    if difficulty == "1":
+        prob = [0.1, 0.05, 0.85]
+    elif difficulty == "2":
+        prob = [0.2, 0.05, 0.75]
+    elif difficulty == "3":
+        prob = [0.2, 0.1, 0.7]
 
     #place player and wumpus first
     playerPos = random.randrange(0, NODE_COUNT - 1)
