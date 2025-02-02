@@ -13,7 +13,6 @@ def generateNodes():
         directions = ["w", "n", "e", "s"]
         for dir in directions:
             nodeId = getRandomNodeId(nodes)
-            #prevent node going
             while nodeId == node.id:
                 nodeId = getRandomNodeId(nodes)
             setattr(node, dir, nodeId)

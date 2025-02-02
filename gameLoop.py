@@ -1,9 +1,10 @@
-from classes import * 
+from classes import *
 from globalVariables import *
 import os
+import random
 
 def getRandomNode(nodes):
-    num = random.randrange(0, NODE_COUNT - 1)
+    num = random.randrange(0, NODE_COUNT)  
     return nodes[num]
 
 def getNodeItem(nodes, id):
@@ -27,48 +28,38 @@ def printItemMessage(item):
             print("Jag känner lukten av Wumpus!")
         case "B":
             print("Jag hör fladdermöss!")
-        case "H":  
+        case "H":
             print("Jag känner vinddrag!")
 
-def printMap(nodes:Node):
-    print("\n \n")
-    # os.system('clear')
+def printMap(nodes):
+    print("\n\n")
     for i in range(len(nodes)):
-        if (i) % 4 == 0:
+        if i % 4 == 0:
             print()
         print(nodes[i].item, end="   ")
     
-    print("\n \n")
+    print("\n\n")
     input()
 
 def playerAction(nodes, player):
     while not gameState.gameOver:
-        # os.system('clear')
-      
-        # for n in nodes:
-        #     print(f"Node ID: {n.id}, Item: {n.item.__dict__ if n.item else 'None'}")
         printMap(nodes)
 
         checkSurroundingNodes(nodes, player)
-        print(f"du befinner dig i rum: {player.id}")
+        print(f"Du befinner dig i rum: {player.id}")
 
         print("Härifrån kan man komma till rum: ", end="")
         for dir in ["n", "e", "s", "w"]:
             nodeId = getattr(player, dir)
-            nodeItem = getNodeItem(nodes, nodeId)
-            # print(str(nodes.index(getNode(nodes, getattr(player, dir)))), end=", ")
             print(nodeId, end=", ")
-
-            #printItemMessage(nodeItem)
-        print()
-        
-        print("Vad vill du göra:")
+        print("\n\nVad vill du göra:")
         print("1. Rör dig")
         print("2. Skjut")
         print("3. debug")
+        print("4. Avsluta \n")
         decision = input()
 
-        while decision not in ["1", "2", "3"]:
+        while decision not in ["1", "2", "3", "4"]:
             print("Fel inmatning")
             print("1. Rör dig")
             print("2. Skjut")
@@ -76,9 +67,10 @@ def playerAction(nodes, player):
 
         if decision == "1":
             player = playerMove(nodes, player)  
-        
-        if decision == "3":
+        elif decision == "3":
             print(f"__rum: {player.w}")
+        elif decision == "4":
+            gameState.gameOver = True
 
 def playerMove(nodes, player):
     directions = ["n", "e", "s", "w"]
@@ -91,57 +83,55 @@ def playerMove(nodes, player):
         direction = input().strip().lower()
     
     targetNodeId = getattr(player, direction)
-    targetNode = getNode(nodes, targetNodeId)
-
     collisionItem = getNodeItem(nodes, targetNodeId)
 
-    if collisionItem and collisionItem.entityType == "N" : 
-        for node in nodes:
-            if node.id == player.id:
-                node.item = Entity(node.id, "N") 
-            if node.id == targetNodeId:
-                node.item = Entity(node.id, "P")
-                print(f"Du gick in i rum: {node.id}")
-        player.id = targetNodeId
+    if collisionItem.entityType == "N":
+        currentNode = getNode(nodes, player.id)
+        currentNode.item = Entity(currentNode.id, "N")
+        
+        newPlayerNode = getNode(nodes, targetNodeId)
+        newPlayerNode.item = Entity(newPlayerNode.id, "P")
+        print(f"Du gick in i rum: {newPlayerNode.id}")
         input("...")
-        return player
+        return newPlayerNode
     else:
-        player = collisionEvent(nodes, collisionItem.entityType, player)
-        return player
-    
+        return collisionEvent(nodes, collisionItem.entityType, player)
 
-def collisionEvent(nodes, collisionItem, player):
-    print(f"Du gick in i: {collisionItem}")
-    input()
-    match collisionItem:
+                
+def collisionEvent(nodes, collisionType, player):
+    if not collisionType == "N": 
+        print(f"Du gick in i: {collisionType}")
+        input()
+    
+    match collisionType:
         case "W":
             print("Du blev uppäten av Wumpus...")
             gameState.gameOver = True
+            return player
         case "H":
             print("Du föll ner i ett bottenlöst hål...")
             gameState.gameOver = True
+            return player
         case "B":
             print("Du känner fladdermusvingar mot kinden och lyfts uppåt")
-            for node in nodes:
-                if node.id == player.id:
-                    node.item = Entity(node.id, "N") 
-            node = getRandomNode(nodes)
-            while not node.item.entityType == "N":
-                node = getRandomNode(nodes)
+            #remove player from current room
+            currentNode = getNode(nodes, player.id)
+            currentNode.item = Entity(currentNode.id, "N")
+            
+            #new room for player
+            newNode = getRandomNode(nodes)
+            while newNode.item.entityType != "N":
+                newNode = getRandomNode(nodes)
 
-            node.item = Entity(node.id, "P")
-            player.id = node.id
-            print(f"du landade i rum: {node.id}")
-            return player
+            newNode.item = Entity(newNode.id, "P")
+            print(f"Du landade i rum: {newNode.id}")
+            return newNode
 
 def checkSurroundingNodes(nodes, player):
     for dir in ["n", "e", "s", "w"]:
         nodeId = getattr(player, dir)
         node = getNodeItem(nodes, nodeId)
-        if not node.entityType == "N":
-            #node contains item
-            print(node.entityMessage, end="\n")
-
-
-
-
+        if node.entityType != "N":
+            print(node.entityMessage)
+            
+    print()
