@@ -17,8 +17,9 @@ def getNode(nodes, id):
 
 
 def startGame(nodes, player, wumpus, difficulty):
+    arrowsLeft = 3 if difficulty == "Hard" else 5
     while not gameState.gameOver:
-        playerAction(nodes, player, wumpus)
+        arrowsLeft = playerAction(nodes, player, wumpus, arrowsLeft)
         if(difficulty == "Hard"):
             wumpusMove()
         
@@ -47,13 +48,16 @@ def wumpusMove():
 
     input("...")
 
-def playerAction(nodes, player, wumpus):
+def playerAction(nodes, player, wumpus, arrowsLeft):
     print("\n\n")
-
     os.system('clear')
 
     checkSurroundingNodes(nodes, player)
-
+    if arrowsLeft < 1:
+        print("Du fick slut på pilar...")
+        print("du förlorade")
+        input()
+        gameState.gameOver = True
     print(f"\nDu befinner dig i rum: {player.id}")
     print("Härifrån kan man komma till rum: ", end="")
     for dir in ["n", "e", "s", "w"]:
@@ -63,7 +67,7 @@ def playerAction(nodes, player, wumpus):
     
     print("\nVad vill du göra:")
     print("1. Rör dig")
-    print("2. Skjut pil")
+    print(f"2. Skjut pil ({arrowsLeft})")
     print("3. Kolla på kartan")
     print("4. Avsluta")
     decision = input().strip()
@@ -78,10 +82,14 @@ def playerAction(nodes, player, wumpus):
         player = playerMove(nodes, player)
     elif decision == "2":
         player = playerShoot(nodes, player, wumpus)
+        arrowsLeft -= 1
+        
     elif decision == "3":
         printMap(nodes)
     elif decision == "4":
         gameState.gameOver = True
+    
+    return arrowsLeft
 
 def playerMove(nodes, player):
     directions = ["n", "e", "s", "w"]
