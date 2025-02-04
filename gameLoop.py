@@ -17,7 +17,7 @@ def getNode(nodes, id):
 
 
 def startGame(nodes, player, wumpus, difficulty):
-    arrowsLeft = 3 if difficulty == "Hard" else 5
+    arrowsLeft = 3 if difficulty == "3" else 5
     while not gameState.gameOver:
         arrowsLeft = playerAction(nodes, player, wumpus, arrowsLeft)
         if(difficulty == "Hard"):
@@ -43,6 +43,19 @@ def printMap(nodes):
     print("\n\n")
     input("...")
 
+def endGame(won, moves = 1):
+    gameState.gameOver = True
+    if won:
+        with open("highscore.txt", "r+") as file:
+            highscore = file.read()
+            #spelaren vann, sparar highscore
+            if int(highscore) > moves:
+                print(f"Du slog ditt förra highscore: {highscore}, nytt highscore: {moves}")
+                file.seek(0)
+                file.write(str(moves)) 
+                file.truncate() 
+
+        
 def wumpusMove():
     print("Du hör hur Wumpus rör sig i kulverterna...")
 
@@ -51,13 +64,16 @@ def wumpusMove():
 def playerAction(nodes, player, wumpus, arrowsLeft):
     print("\n\n")
     os.system('clear')
+    endGame(True)
 
-    checkSurroundingNodes(nodes, player)
     if arrowsLeft < 1:
         print("Du fick slut på pilar...")
         print("du förlorade")
         input()
-        gameState.gameOver = True
+        endGame(True)
+        return
+    
+    checkSurroundingNodes(nodes, player)
     print(f"\nDu befinner dig i rum: {player.id}")
     print("Härifrån kan man komma till rum: ", end="")
     for dir in ["n", "e", "s", "w"]:
@@ -121,7 +137,7 @@ def playerShoot(nodes, player, wumpus):
     steps = 3
 
     for i in range(steps):
-        print(f"\Rum {i+1} av {steps}: Pilen befinner sig i rum {arrow_room_id}.")
+        print(f"Rum {i+1} av {steps}: Pilen befinner sig i rum {arrow_room_id}.")
         print("I vilken riktning ska pilen flyga? (n/e/s/w)")
         direction = input().strip().lower()
         while direction not in ["n", "e", "s", "w"]:
