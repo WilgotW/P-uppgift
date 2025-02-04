@@ -49,6 +49,7 @@ def main():
     while not difficulty in ["1", "2", "3"]:
         print("Fel inmatning, försök igen:")
         difficulty = input().strip().lower()
+    gameState.difficulty = difficulty
     nodes = generateNodes(difficulty)
     
     # Get the player and wumpus 
@@ -60,6 +61,6 @@ def main():
     if decision == "j":
         gameInstructions()
     
-    startGame(nodes, player, wumpus, difficulty)
+    startGame(nodes, player, wumpus)
 
 main()

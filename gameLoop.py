@@ -16,12 +16,11 @@ def getNode(nodes, id):
     return node if node else None
 
 
-def startGame(nodes, player, wumpus, difficulty):
-    arrowsLeft = 3 if difficulty == "3" else 5
+def startGame(nodes, player, wumpus):
+    arrowsLeft = 3 if gameState.difficulty == "3" else 5
+    moves = 0
     while not gameState.gameOver:
-        arrowsLeft = playerAction(nodes, player, wumpus, arrowsLeft)
-        if(difficulty == "Hard"):
-            wumpusMove()
+        arrowsLeft, moves = playerAction(nodes, player, wumpus, arrowsLeft, moves)
         
 
 def printItemMessage(item):
@@ -42,6 +41,7 @@ def printMap(nodes):
     
     print("\n\n")
     input("...")
+    os.system("clear")
 
 def endGame(won, moves = 1):
     gameState.gameOver = True
@@ -53,24 +53,24 @@ def endGame(won, moves = 1):
                 print(f"Du slog ditt förra highscore: {highscore}, nytt highscore: {moves}")
                 file.seek(0)
                 file.write(str(moves)) 
-                file.truncate() 
-
-        
+                file.truncate()
+    else:
+        print(f"Du förlorade efter: {moves} drag") 
+      
 def wumpusMove():
-    print("Du hör hur Wumpus rör sig i kulverterna...")
-
+    if gameState.gameOver == True: return
+    print("\nDu hör hur Wumpus rör sig i kulverterna...")
     input("...")
 
-def playerAction(nodes, player, wumpus, arrowsLeft):
+def playerAction(nodes, player, wumpus, arrowsLeft, moves):
     print("\n\n")
     os.system('clear')
-    endGame(True)
 
     if arrowsLeft < 1:
         print("Du fick slut på pilar...")
         print("du förlorade")
         input()
-        endGame(True)
+        endGame(True, moves)
         return
     
     checkSurroundingNodes(nodes, player)
@@ -91,21 +91,29 @@ def playerAction(nodes, player, wumpus, arrowsLeft):
     while decision not in ["1", "2", "3", "4"]:
         print("Fel inmatning")
         print("1. Rör dig")
-        print("2. Skjut pil")
+        print(f"2. Skjut pil ({arrowsLeft})")
+        print("3. Kolla på kartan")
+        print("4. Avsluta")
         decision = input().strip()
 
     if decision == "1":
+        moves += 1
         player = playerMove(nodes, player)
+        if(gameState.difficulty == "3"):
+            wumpusMove()
     elif decision == "2":
-        player = playerShoot(nodes, player, wumpus)
+        moves += 1
         arrowsLeft -= 1
+        player = playerShoot(nodes, player, wumpus, moves)
+        if(gameState.difficulty == "3"):
+            wumpusMove()
         
     elif decision == "3":
         printMap(nodes)
     elif decision == "4":
-        gameState.gameOver = True
+        endGame(False)
     
-    return arrowsLeft
+    return arrowsLeft, moves
 
 def playerMove(nodes, player):
     directions = ["n", "e", "s", "w"]
@@ -126,33 +134,31 @@ def playerMove(nodes, player):
         newPlayerNode = getNode(nodes, targetNodeId)
         newPlayerNode.item = Entity(newPlayerNode.id, "P")
         print(f"Du gick in i rum: {newPlayerNode.id}")
-        input("Tryck Enter för att fortsätta...")
         return newPlayerNode
     else:
         return collisionEvent(nodes, collisionItem.entityType, player)
     
-def playerShoot(nodes, player, wumpus):
+def playerShoot(nodes, player, wumpus, moves):
     print("Du har valt att skjuta en pil.")
-    arrow_room_id = player.id
+    arrowRoomId = player.id
     steps = 3
 
     for i in range(steps):
-        print(f"Rum {i+1} av {steps}: Pilen befinner sig i rum {arrow_room_id}.")
+        print(f"Rum {i+1} av {steps}: Pilen befinner sig i rum {arrowRoomId}.")
         print("I vilken riktning ska pilen flyga? (n/e/s/w)")
         direction = input().strip().lower()
         while direction not in ["n", "e", "s", "w"]:
             print("Fel inmatning, försök igen (n/e/s/w):")
             direction = input().strip().lower()
 
-        current_arrow_node = getNode(nodes, arrow_room_id)
-        arrow_room_id = getattr(current_arrow_node, direction)
-        print(f"Pilen flyttas till rum: {arrow_room_id}")
+        current_arrow_node = getNode(nodes, arrowRoomId)
+        arrowRoomId = getattr(current_arrow_node, direction)
+        print(f"Pilen flyttas till rum: {arrowRoomId}")
 
-        roomItem = getNodeItem(nodes, arrow_room_id)
+        roomItem = getNodeItem(nodes, arrowRoomId)
         if roomItem.entityType == "W":
             print("Du träffade Wumpus med pilen! Du vann!")
-            gameState.gameOver = True
-            input("Tryck Enter för att avsluta spelet...")
+            endGame(True, moves)
             return player 
 
     print("Pilen nådde sin maximala räckvidd och missade Wumpus.")
@@ -164,11 +170,11 @@ def collisionEvent(nodes, collisionType, player):
     match collisionType:
         case "W":
             print("Du blev uppäten av Wumpus...")
-            gameState.gameOver = True
+            endGame(False)
             return player
         case "H":
             print("Du föll ner i ett bottenlöst hål...")
-            gameState.gameOver = True
+            endGame(False)
             return player
         case "B":
             print("Du känner fladdermusvingar mot kinden och lyfts uppåt")
@@ -188,9 +194,9 @@ def checkSurroundingNodes(nodes, player):
     messages = []
     for direction in ["n", "e", "s", "w"]:
         nodeId = getattr(player, direction)
-        node = getNodeItem(nodes, nodeId)
-        if node.entityType != "N":
-            messages.append(node.entityMessage)
+        nodeItem = getNodeItem(nodes, nodeId)
+        if nodeItem.entityType != "N":
+            messages.append(nodeItem.entityMessage)
     messageCounts = {}
     for msg in messages:
         if msg in messageCounts:

@@ -27,9 +27,9 @@ def placeNodeItems(nodes, difficulty):
     if difficulty == "1":
         prob = [0.1, 0.05, 0.85]
     elif difficulty == "2":
-        prob = [0.2, 0.05, 0.75]
-    elif difficulty == "3":
         prob = [0.2, 0.1, 0.7]
+    elif difficulty == "3":
+        prob = [0.25, 0.15, 0.6]
 
     #place player and wumpus first
     playerPos = random.randrange(0, NODE_COUNT - 1)

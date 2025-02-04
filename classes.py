@@ -22,5 +22,6 @@ class Entity:
        
 
 class GameState:
-    def __init__(self):
+    def __init__(self, difficulty = "1"):
         self.gameOver = False
+        self.difficulty = difficulty
