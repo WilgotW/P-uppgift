@@ -4,15 +4,23 @@ import os
 import random
 
 def getRandomNode(nodes):
-    num = random.randrange(0, NODE_COUNT)  # adjusted to use all nodes
+    num = random.randrange(0, NODE_COUNT)
     return nodes[num]
 
 def getNodeItem(nodes, id):
-    node = next((n for n in nodes if n.id == id), None)
+    node = None
+    for n in nodes:
+        if n.item and n.id == id:
+            node = n
+            break
     return node.item if node else None
 
 def getNode(nodes, id):
-    node = next((n for n in nodes if n.id == id), None)
+    node = None
+    for n in nodes:
+        if n.id == id:
+            node = n
+            break
     return node if node else None
 
 

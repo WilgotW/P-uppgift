@@ -53,8 +53,16 @@ def main():
     nodes = generateNodes(difficulty)
     
     # Get the player and wumpus 
-    player = next((n for n in nodes if n.item and n.item.entityType == "P"), None)
-    wumpus = next((n for n in nodes if n.item and n.item.entityType == "W"), None)   
+    player = None
+    for n in nodes:
+        if n.item and n.item.entityType == "P":
+            player = n
+            break
+    wumpus = None
+    for n in nodes:
+        if n.item and n.item.entityType == "W":
+            player = n
+            break
 
     print("Vill du läsa instruktionerna för hur man spelar? J/N")
     decision = input().strip().lower()
