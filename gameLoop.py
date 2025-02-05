@@ -205,6 +205,7 @@ def checkSurroundingNodes(nodes, player):
         nodeItem = getNodeItem(nodes, nodeId)
         if nodeItem.entityType != "N":
             messages.append(nodeItem.entityMessage)
+        
     messageCounts = {}
     for msg in messages:
         if msg in messageCounts:
