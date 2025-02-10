@@ -1,55 +1,32 @@
 import random
 from classes import *
 from globalVariables import *
-
-def getRandomNodeId(nodes):
-    num = random.randrange(0, NODE_COUNT - 1)
-    return nodes[num].id
-
-def getNode(nodes, id):
-    node = None
-    for n in nodes:
-        if n.id == id:
-            node = n
-            break
-    return node if node else None
+from nodeFunctions import *
 
 def generateNodes(difficulty):
-    # Create nodes with ids 1 through NODE_COUNT, each with no connections.
     nodes = [Node(i + 1, None, None, None, None, None) for i in range(NODE_COUNT)]
     
-    # For each node, for each direction, if that direction is not yet connected:
     for node in nodes:
         for direction in ["w", "n", "e", "s"]:
-            # Only set a connection if this direction is empty.
             if getattr(node, direction) is None:
-                # Build a list of candidate nodes that are not the current node.
                 candidateNodes = [n for n in nodes if n.id != node.id]
-                # Shuffle the candidate list for randomness.
                 random.shuffle(candidateNodes)
                 connectionNode = None
                 connectionDirection = None
                 
-                # Find the first candidate that has at least one available direction.
                 for candidate in candidateNodes:
-                    # Get a list of free directions in this candidate node.
                     freeDirections = [d for d in ["w", "n", "e", "s"] if getattr(candidate, d) is None]
                     if freeDirections:
                         connectionNode = candidate
                         connectionDirection = random.choice(freeDirections)
-                        break  # Use the first candidate found.
+                        break 
                 
-                # Only make a connection if a candidate was found.
                 if connectionNode:
-                    # Set the current node's direction to the candidate's id.
                     setattr(node, direction, connectionNode.id)
-                    # Set the candidate node's chosen direction back to the current node's id.
                     setattr(connectionNode, connectionDirection, node.id)
                 else:
-                    # If no candidate is found, you might log an error or handle it as needed.
                     print(f"Warning: No available node found to connect node {node.id} direction {direction}")
                     
-    # Place node items (player, Wumpus, bats, etc.) using the given difficult
     placeNodeItems(nodes, difficulty)
     return nodes
 

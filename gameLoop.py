@@ -1,55 +1,13 @@
 from classes import *
 from globalVariables import *
-import os
-import random
-
-def getRandomNode(nodes):
-    num = random.randrange(0, NODE_COUNT)
-    return nodes[num]
-
-def getNodeItem(nodes, id):
-    node = None
-    for n in nodes:
-        if n.item and n.id == id:
-            node = n
-            break
-    return node.item if node else None
-
-def getNode(nodes, id):
-    node = None
-    for n in nodes:
-        if n.id == id:
-            node = n
-            break
-    return node if node else None
-
+from textFunctions import *
+from nodeFunctions import *
 
 def startGame(nodes, player, wumpus):
     arrowsLeft = 3 if gameState.difficulty == "3" else 5
     moves = 0
     while not gameState.gameOver:
         arrowsLeft, moves = playerAction(nodes, player, wumpus, arrowsLeft, moves)
-        
-
-def printItemMessage(item):
-    match str(item):
-        case "W":
-            print("Jag känner lukten av Wumpus!")
-        case "B":
-            print("Jag hör fladdermöss!")
-        case "H":  
-            print("Jag känner vinddrag!")
-
-def printMap(nodes):
-    os.system('clear')
-    for i in range(len(nodes)):
-        if i % 4 == 0:
-            print()
-        print(nodes[i].item, end="   ")
-    
-    print("\n\n")
-    input("...")
-    os.system("clear")
 
 def endGame(won, moves = 1):
     gameState.gameOver = True
@@ -70,40 +28,22 @@ def wumpusMove():
     print("\nDu hör hur Wumpus rör sig i kulverterna...")
     input("...")
 
-def playerAction(nodes, player, wumpus, arrowsLeft, moves):
-    print("\n\n")
-    os.system('clear')
-
+def checkArrowsLeft(arrowsLeft, moves):
     if arrowsLeft < 1:
         print("Du fick slut på pilar...")
         print("du förlorade")
         input()
         endGame(True, moves)
-        return
+        return True
+
+
+def playerAction(nodes, player, wumpus, arrowsLeft, moves):
     
+    if checkArrowsLeft(arrowsLeft, moves): return
     checkSurroundingNodes(nodes, player)
-    print(f"\nDu befinner dig i rum: {player.id}")
-    print("Härifrån kan man komma till rum: ", end="")
-    for dir in ["n", "e", "s", "w"]:
-        nodeId = getattr(player, dir)
-        print(nodeId, end=", ")
-    print()
-    
-    print("\nVad vill du göra:")
-    print("1. Rör dig")
-    print(f"2. Skjut pil ({arrowsLeft})")
-    print("3. Kolla på kartan")
-    print("4. Avsluta")
-    decision = input().strip()
+    printAvaiableDirectios(player)
 
-    while decision not in ["1", "2", "3", "4"]:
-        print("Fel inmatning")
-        print("1. Rör dig")
-        print(f"2. Skjut pil ({arrowsLeft})")
-        print("3. Kolla på kartan")
-        print("4. Avsluta")
-        decision = input().strip()
-
+    decision = printMenuOptions(arrowsLeft)
     if decision == "1":
         moves += 1
         player = playerMove(nodes, player)
@@ -115,7 +55,6 @@ def playerAction(nodes, player, wumpus, arrowsLeft, moves):
         player = playerShoot(nodes, player, wumpus, moves)
         if(gameState.difficulty == "3"):
             wumpusMove()
-        
     elif decision == "3":
         printMap(nodes)
     elif decision == "4":
@@ -145,7 +84,14 @@ def playerMove(nodes, player):
         return newPlayerNode
     else:
         return collisionEvent(nodes, collisionItem.entityType, player)
-    
+
+def printArrowDirections():
+    print("I vilken riktning ska pilen flyga? (n/e/s/w)")
+    direction = input().strip().lower()
+    while direction not in ["n", "e", "s", "w"]:
+        print("Fel inmatning, försök igen (n/e/s/w):")
+        direction = input().strip().lower()
+
 def playerShoot(nodes, player, wumpus, moves):
     print("Du har valt att skjuta en pil.")
     arrowRoomId = player.id
@@ -153,14 +99,11 @@ def playerShoot(nodes, player, wumpus, moves):
 
     for i in range(steps):
         print(f"Rum {i+1} av {steps}: Pilen befinner sig i rum {arrowRoomId}.")
-        print("I vilken riktning ska pilen flyga? (n/e/s/w)")
-        direction = input().strip().lower()
-        while direction not in ["n", "e", "s", "w"]:
-            print("Fel inmatning, försök igen (n/e/s/w):")
-            direction = input().strip().lower()
+        direction = printArrowDirections()
 
-        current_arrow_node = getNode(nodes, arrowRoomId)
-        arrowRoomId = getattr(current_arrow_node, direction)
+        currentArrowNode = getNode(nodes, arrowRoomId)
+        arrowRoomId = getattr(currentArrowNode, direction)
+
         print(f"Pilen flyttas till rum: {arrowRoomId}")
 
         roomItem = getNodeItem(nodes, arrowRoomId)
@@ -170,7 +113,7 @@ def playerShoot(nodes, player, wumpus, moves):
             return player 
 
     print("Pilen nådde sin maximala räckvidd och missade Wumpus.")
-    input("Tryck Enter för att fortsätta...")
+    input("...")
     return player
 
 def collisionEvent(nodes, collisionType, player):
