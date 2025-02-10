@@ -18,6 +18,7 @@ def printMenuOptions(arrowsLeft):
         print("3. Kolla på kartan")
         print("4. Avsluta")
         decision = input().strip()
+    return decision
 
 
 def printAvaiableDirectios(player):

@@ -7,39 +7,38 @@ def startGame(nodes, player, wumpus):
     arrowsLeft = 3 if gameState.difficulty == "3" else 5
     moves = 0
     while not gameState.gameOver:
-        arrowsLeft, moves = playerAction(nodes, player, wumpus, arrowsLeft, moves)
+        arrowsLeft, moves, player = playerAction(nodes, player, wumpus, arrowsLeft, moves)
 
-def endGame(won, moves = 1):
+def endGame(won, moves=1):
     gameState.gameOver = True
     if won:
         with open("highscore.txt", "r+") as file:
             highscore = file.read()
-            #spelaren vann, sparar highscore
             if int(highscore) > moves:
                 print(f"Du slog ditt förra highscore: {highscore}, nytt highscore: {moves}")
                 file.seek(0)
-                file.write(str(moves)) 
+                file.write(str(moves))
                 file.truncate()
     else:
-        print(f"Du förlorade efter: {moves} drag") 
+        print(f"Du förlorade efter: {moves} drag")
       
 def wumpusMove():
-    if gameState.gameOver == True: return
+    if gameState.gameOver:
+        return
     print("\nDu hör hur Wumpus rör sig i kulverterna...")
     input("...")
 
 def checkArrowsLeft(arrowsLeft, moves):
     if arrowsLeft < 1:
         print("Du fick slut på pilar...")
-        print("du förlorade")
+        print("Du förlorade")
         input()
         endGame(True, moves)
         return True
-
-
+    return False
 def playerAction(nodes, player, wumpus, arrowsLeft, moves):
-    
-    if checkArrowsLeft(arrowsLeft, moves): return
+    if checkArrowsLeft(arrowsLeft, moves):
+        return arrowsLeft, moves, player 
     checkSurroundingNodes(nodes, player)
     printAvaiableDirectios(player)
 
@@ -47,20 +46,19 @@ def playerAction(nodes, player, wumpus, arrowsLeft, moves):
     if decision == "1":
         moves += 1
         player = playerMove(nodes, player)
-        if(gameState.difficulty == "3"):
+        if gameState.difficulty == "3":
             wumpusMove()
     elif decision == "2":
         moves += 1
         arrowsLeft -= 1
         player = playerShoot(nodes, player, wumpus, moves)
-        if(gameState.difficulty == "3"):
+        if gameState.difficulty == "3":
             wumpusMove()
     elif decision == "3":
         printMap(nodes)
     elif decision == "4":
-        endGame(False)
-    
-    return arrowsLeft, moves
+        endGame(False, moves)  
+    return arrowsLeft, moves, player
 
 def playerMove(nodes, player):
     directions = ["n", "e", "s", "w"]
@@ -78,6 +76,7 @@ def playerMove(nodes, player):
         currentNode = getNode(nodes, player.id)
         currentNode.item = Entity(currentNode.id, "N")
         
+
         newPlayerNode = getNode(nodes, targetNodeId)
         newPlayerNode.item = Entity(newPlayerNode.id, "P")
         print(f"Du gick in i rum: {newPlayerNode.id}")
@@ -91,6 +90,7 @@ def printArrowDirections():
     while direction not in ["n", "e", "s", "w"]:
         print("Fel inmatning, försök igen (n/e/s/w):")
         direction = input().strip().lower()
+    return direction 
 
 def playerShoot(nodes, player, wumpus, moves):
     print("Du har valt att skjuta en pil.")
@@ -140,6 +140,7 @@ def collisionEvent(nodes, collisionType, player):
             print(f"Du landade i rum: {newNode.id}")
             return newNode
     input("...")
+    return player  
 
 def checkSurroundingNodes(nodes, player):
     messages = []

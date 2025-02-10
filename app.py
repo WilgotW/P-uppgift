@@ -1,7 +1,7 @@
 from classes import * 
-from roomGeneration import * 
-from gameLoop import * 
-
+from roomGeneration import generateNodes
+from gameLoop import startGame  # assuming this function exists and is correctly implemented
+from globalVariables import *
 def gameInstructions():
     print(
         """
@@ -24,44 +24,54 @@ def gameInstructions():
         pilen ska välja i varje rum. Glöm inte bort att tunnlarna vindlar sig
         på oväntade sätt. Du kan råka skjuta dig själv…
 
-        Lycka till!  
-        """)
-    input("...")
+        Lycka till!
+        """
+    )
+    input("Tryck Enter för att fortsätta...")
+
 def main():
     print("Välj svårighetsgrad:")
     print(
         """
         1. Lätt
-        - Mindre hål och fladdermöss
-        - 5 pilar
+           - Mindre hål och fladdermöss
+           - 5 pilar
 
         2. Normal
-        - Normalt många hål och fladdermöss
-        - 5 pilar
+           - Normalt många hål och fladdermöss
+           - 5 pilar
 
         3. Svår
-        - Fler hål och fladdermöss
-        - 3 pilar
-        - Wumpus rör sig mot spelaren 
+           - Fler hål och fladdermöss
+           - 3 pilar
+           - Wumpus rör sig mot spelaren 
         """
-        )
+    )
     difficulty = input().strip().lower()
-    while not difficulty in ["1", "2", "3"]:
+    while difficulty not in ["1", "2", "3"]:
         print("Fel inmatning, försök igen:")
         difficulty = input().strip().lower()
-    gameState.difficulty = difficulty
-    nodes = generateNodes(difficulty)
     
-    # Get the player and wumpus 
+    # Assuming gameState is defined in one of the imported modules
+    gameState.difficulty = difficulty
+
+    nodes = generateNodes(difficulty)
+    if not nodes:
+        print("Kunde inte generera noder.")
+        return
+
+    # Get the player node
     player = None
     for n in nodes:
         if n.item and n.item.entityType == "P":
             player = n
             break
+
+    # Get the wumpus node
     wumpus = None
     for n in nodes:
         if n.item and n.item.entityType == "W":
-            player = n
+            wumpus = n
             break
 
     print("Vill du läsa instruktionerna för hur man spelar? J/N")
@@ -71,4 +81,5 @@ def main():
     
     startGame(nodes, player, wumpus)
 
-main()
+if __name__ == "__main__":
+    main()
