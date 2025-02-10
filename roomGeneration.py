@@ -49,7 +49,7 @@ def generateNodes(difficulty):
                     # If no candidate is found, you might log an error or handle it as needed.
                     print(f"Warning: No available node found to connect node {node.id} direction {direction}")
                     
-    # Place node items (player, Wumpus, bats, etc.) using the given difficulty.
+    # Place node items (player, Wumpus, bats, etc.) using the given difficult
     placeNodeItems(nodes, difficulty)
     return nodes
 
