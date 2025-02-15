@@ -1,6 +1,6 @@
 from classes import * 
 from roomGeneration import generateNodes
-from gameLoop import startGame  # assuming this function exists and is correctly implemented
+from gameLoop import startGame 
 from globalVariables import *
 def gameInstructions():
     print(
@@ -52,7 +52,6 @@ def main():
         print("Fel inmatning, försök igen:")
         difficulty = input().strip().lower()
     
-    # Assuming gameState is defined in one of the imported modules
     gameState.difficulty = difficulty
 
     nodes = generateNodes(difficulty)
