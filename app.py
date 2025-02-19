@@ -59,14 +59,14 @@ def main():
         print("Kunde inte generera noder.")
         return
 
-    # Get the player node
+    #Get the player node
     player = None
     for n in nodes:
         if n.item and n.item.entityType == "P":
             player = n
             break
 
-    # Get the wumpus node
+    #Get the wumpus node
     wumpus = None
     for n in nodes:
         if n.item and n.item.entityType == "W":
