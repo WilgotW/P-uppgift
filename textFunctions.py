@@ -2,7 +2,7 @@ import os
 
 def printMenuOptions(arrowsLeft):
     print("\n\n")
-    os.system('clear')
+    #os.system('clear')
 
     print("\nVad vill du göra:")
     print("1. Rör dig")
@@ -48,3 +48,11 @@ def printMap(nodes):
     print("\n\n")
     input("...")
     os.system("clear")
+
+def printArrowDirections():
+    print("I vilken riktning ska pilen flyga? (n/e/s/w)")
+    direction = input().strip().lower()
+    while direction not in ["n", "e", "s", "w"]:
+        print("Fel inmatning, försök igen (n/e/s/w):")
+        direction = input().strip().lower()
+    return direction 

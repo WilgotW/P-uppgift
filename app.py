@@ -2,6 +2,8 @@ from classes import *
 from roomGeneration import generateNodes
 from gameLoop import startGame 
 from globalVariables import *
+
+#printar ut spelets instruktioner
 def gameInstructions():
     print(
         """
@@ -54,19 +56,20 @@ def main():
     
     gameState.difficulty = difficulty
 
+    #generera noderna
     nodes = generateNodes(difficulty)
     if not nodes:
         print("Kunde inte generera noder.")
         return
 
-    #Get the player node
+    #Hämta spelarens nod
     player = None
     for n in nodes:
         if n.item and n.item.entityType == "P":
             player = n
             break
 
-    #Get the wumpus node
+    #Hämta wumpus nod
     wumpus = None
     for n in nodes:
         if n.item and n.item.entityType == "W":
