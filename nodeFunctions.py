@@ -1,4 +1,5 @@
 from globalVariables import * 
+import random
 
 def getRandomNodeId(nodes):
     num = random.randrange(0, NODE_COUNT - 1)
