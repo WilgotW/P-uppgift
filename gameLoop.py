@@ -2,6 +2,7 @@ from classes import *
 from globalVariables import *
 from textFunctions import *
 from nodeFunctions import *
+from gui import *
 
 def startGame(nodes, player, wumpus):
     #globala variabler
@@ -9,6 +10,7 @@ def startGame(nodes, player, wumpus):
     moves = 0
 
     while not gameState.gameOver:
+        root.after(100, guiLoop, player)
         arrowsLeft, moves, player = playerAction(nodes, player, wumpus, arrowsLeft, moves)
 
 def endGame(won, moves=1):
