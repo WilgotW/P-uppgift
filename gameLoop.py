@@ -45,7 +45,7 @@ def playerAction(nodes, player, wumpus, arrowsLeft, moves):
     match decision:
         case "1":
             moves += 1
-            player = playerMove(nodes, player)
+            player = playerMove(nodes, player, moves)
         case "2":
             moves += 1
             arrowsLeft -= 1
@@ -56,7 +56,7 @@ def playerAction(nodes, player, wumpus, arrowsLeft, moves):
             endGame(False, moves)  
     return arrowsLeft, moves, player
 
-def playerMove(nodes, player):
+def playerMove(nodes, player, moves):
     directions = ["n", "e", "s", "w"]
     print("Vilket håll? (n/e/s/w)")
     direction = input().strip().lower()
@@ -78,18 +78,18 @@ def playerMove(nodes, player):
         print(f"Du gick in i rum: {newPlayerNode.id}")
         return newPlayerNode
     else:
-        return collisionEvent(nodes, collisionItem.entityType, player) #ifall det fanns ett objekt i önskade hållet
+        return collisionEvent(nodes, collisionItem.entityType, player, moves) #ifall det fanns ett objekt i önskade hållet
 
-def collisionEvent(nodes, collisionType, player):
+def collisionEvent(nodes, collisionType, player, moves):
     input("...")
     match collisionType:
         case "W":
             print("Du blev uppäten av Wumpus...")
-            endGame(False)
+            endGame(False, moves)
             return player
         case "H":
             print("Du föll ner i ett bottenlöst hål...")
-            endGame(False)
+            endGame(False, moves)
             return player
         case "B":
             print("Du känner fladdermusvingar mot kinden och lyfts uppåt")
