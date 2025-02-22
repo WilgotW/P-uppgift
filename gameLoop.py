@@ -8,10 +8,19 @@ def startGame(nodes, player, wumpus):
     #globala variabler
     arrowsLeft = 3 if gameState.difficulty == "3" else 5
     moves = 0
+    print("Använd gui? j/n")
+    gui_choice = input().strip().lower()
+    while gui_choice not in ["j", "n"]:
+        print("Fel inmatning, prova igen:")
+        gui_choice = input().strip().lower()
 
-    while not gameState.gameOver:
-        root.after(100, guiLoop, player)
-        arrowsLeft, moves, player = playerAction(nodes, player, wumpus, arrowsLeft, moves)
+    if gui_choice == "j":
+        # Run the GUI game loop (the new, event-driven version)
+        startGameGui(nodes, player, wumpus)
+        return
+    else:
+        while not gameState.gameOver:
+            arrowsLeft, moves, player = playerAction(nodes, player, wumpus, arrowsLeft, moves)
 
 def endGame(won, moves=1):
     gameState.gameOver = True
