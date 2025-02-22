@@ -37,6 +37,7 @@ def startGameGui(nodes, player, wumpus):
     shootButton.grid(row=0, column=1, padx=5)
     mapButton.grid(row=0, column=2, padx=5)
     quitButton.grid(row=0, column=3, padx=5)
+    
     state = {
         "arrowsLeft": arrowsLeft,
         "moves": moves,
@@ -48,8 +49,10 @@ def startGameGui(nodes, player, wumpus):
     def appendMessage(msg):
         messageText.insert(tk.END, msg + "\n")
         messageText.see(tk.END)
+
     def updateRoomLabel():
         roomLabel.config(text=f"Aktuellt rum: {state['player'].id}")
+
     def checkGameOver():
         if state["gameOver"]:
             moveButton.config(state=tk.DISABLED)
@@ -124,12 +127,14 @@ def startGameGui(nodes, player, wumpus):
         state["moves"] += 1
         arrowRoomId = state["player"].id
         shootArrowStep(1, arrowRoomId)
+
     def shootArrowStep(step, arrowRoomId):
         if step > 3:
             appendMessage("Pilen missade Wumpus.")
             return
         appendMessage(f"Pilen befinner sig i rum {arrowRoomId} (steg {step}).")
         askDirection("Skjut", "Välj riktning för pilen:", lambda d: processShootStep(step, arrowRoomId, d))
+
     def processShootStep(step, arrowRoomId, direction):
         currentArrowNode = getNode(state["nodes"], arrowRoomId)
         newArrowRoomId = getattr(currentArrowNode, direction)
@@ -141,6 +146,7 @@ def startGameGui(nodes, player, wumpus):
             return
         else:
             shootArrowStep(step + 1, newArrowRoomId)
+
     def mapAction():
         mapWin = tk.Toplevel(root)
         mapWin.title("Karta")
@@ -152,9 +158,11 @@ def startGameGui(nodes, player, wumpus):
             if (i+1) % cols == 0:
                 text.insert(tk.END, "\n")
         text.config(state=tk.DISABLED)
+
     def quitAction():
         appendMessage("Spelet är över. Du avslutade.")
         endGame(False)
+
     def endGame(won):
         state["gameOver"] = True
         if won:
@@ -185,6 +193,7 @@ def startGameGui(nodes, player, wumpus):
         checkGameOver()
         messagebox.showinfo("Spelet är över", msg)
         root.destroy()
+
     def askDirection(title, prompt, callback):
         win = tk.Toplevel(root)
         win.title(title)

@@ -9,18 +9,20 @@ def startGame(nodes, player, wumpus):
     arrowsLeft = 3 if gameState.difficulty == "3" else 5
     moves = 0
     print("Använd gui? j/n")
-    gui_choice = input().strip().lower()
-    while gui_choice not in ["j", "n"]:
+    guiChoice = input().strip().lower()
+    while guiChoice not in ["j", "n"]:
         print("Fel inmatning, prova igen:")
-        gui_choice = input().strip().lower()
+        guiChoice = input().strip().lower()
 
-    if gui_choice == "j":
-        # Run the GUI game loop (the new, event-driven version)
+    if guiChoice == "j":
         startGameGui(nodes, player, wumpus)
         return
     else:
         while not gameState.gameOver:
             arrowsLeft, moves, player = playerAction(nodes, player, wumpus, arrowsLeft, moves)
+            if gameState.difficulty == "3" and not gameState.gameOver:
+                print("Du hör Wumpus röra sig i kulverterna...")
+                wumpus = wumpusAI(nodes, wumpus, player, moves)
 
 def endGame(won, moves=1):
     gameState.gameOver = True
@@ -53,6 +55,10 @@ def playerAction(nodes, player, wumpus, arrowsLeft, moves):
     printAvaiableDirectios(player)
 
     decision = printMenuOptions(arrowsLeft) #skriv ut meny och ta input
+    while decision == "3":   
+        printMap(nodes)
+        decision = printMenuOptions(arrowsLeft) #skriv ut meny och ta input
+
     match decision:
         case "1":
             moves += 1
@@ -65,6 +71,8 @@ def playerAction(nodes, player, wumpus, arrowsLeft, moves):
             printMap(nodes)
         case "4":
             endGame(False, moves)  
+        case "5":
+            print()
     return arrowsLeft, moves, player
 
 def playerMove(nodes, player, moves):
@@ -147,7 +155,8 @@ def checkSurroundingNodes(nodes, player): #skriv ut alla varningsmeddelande av o
     for direction in ["n", "e", "s", "w"]: 
         nodeId = getattr(player, direction)
         nodeItem = getNodeItem(nodes, nodeId)
-        if nodeItem.entityType != "N": #gå igenom alla håll och spara objektets varningsmeddelelande ifall det finns ett objekt
+
+        if nodeItem is not None and nodeItem.entityType != "N": 
             messages.append(nodeItem.entityMessage)
         
     messageCounts = {} #spara antalet för alla meddelande
@@ -161,3 +170,46 @@ def checkSurroundingNodes(nodes, player): #skriv ut alla varningsmeddelande av o
             print(f"{msg} x{count}")
         else:
             print(msg)
+
+def wumpusAI(nodes, wumpusNode, playerNode, moves):
+    if wumpusNode is None or playerNode is None:
+        return wumpusNode
+    path = bfsPath(nodes, wumpusNode.id, playerNode.id)
+    if path and len(path) > 1:
+        nextId = path[1]
+        oldNode = getNode(nodes, wumpusNode.id)
+        oldNode.item = Entity(oldNode.id, "N")
+        if nextId == playerNode.id:
+            print("Wumpus rörde sig in i ditt rum!")
+            endGame(False, moves)
+            return wumpusNode
+        newWumpusNode = getNode(nodes, nextId)
+        newWumpusNode.item = Entity(newWumpusNode.id, "W", "Du känner lukten av wumpus!")
+        return newWumpusNode
+    return wumpusNode
+
+def bfsPath(nodes, startId, goalId):
+
+    queue = [startId]
+    visited = {startId}
+    parent = {startId: None}
+
+    while queue:
+        current = queue.pop(0)
+        if current == goalId:
+            path = []
+            while current is not None:
+                path.append(current)
+                current = parent[current]
+            path.reverse()
+            return path
+
+        currentNode = getNode(nodes, current)
+        for d in ["n", "e", "s", "w"]:
+            neighborId = getattr(currentNode, d)
+            if neighborId is not None and neighborId not in visited:
+                visited.add(neighborId)
+                parent[neighborId] = current
+                queue.append(neighborId)
+
+    return None

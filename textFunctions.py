@@ -11,7 +11,7 @@ def printMenuOptions(arrowsLeft):
     print("4. Avsluta")
     decision = input().strip()
 
-    while decision not in ["1", "2", "3", "4"]:
+    while decision not in ["1", "2", "3", "4", "5"]:
         print("Fel inmatning")
         print("1. Rör dig")
         print(f"2. Skjut pil ({arrowsLeft})")
