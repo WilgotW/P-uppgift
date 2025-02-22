@@ -2,8 +2,8 @@ from classes import *
 from roomGeneration import generateNodes
 from gameLoop import startGame 
 from globalVariables import *
+from gui import *
 
-#printar ut spelets instruktioner
 def gameInstructions():
     print(
         """
@@ -36,17 +36,17 @@ def main():
     print(
         """
         1. Lätt
-           - Mindre hål och fladdermöss
-           - 5 pilar
+        - Mindre hål och fladdermöss
+        - 5 pilar
 
         2. Normal
-           - Normalt många hål och fladdermöss
-           - 5 pilar
+        - Normalt många hål och fladdermöss
+        - 5 pilar
 
         3. Svår
-           - Fler hål och fladdermöss
-           - 3 pilar
-           - Wumpus rör sig mot spelaren 
+        - Fler hål och fladdermöss
+        - 3 pilar
+        - Wumpus rör sig mot spelaren 
         """
     )
     difficulty = input().strip().lower()
@@ -56,20 +56,20 @@ def main():
     
     gameState.difficulty = difficulty
 
-    #generera noderna
+    # Generera noderna
     nodes = generateNodes(difficulty)
     if not nodes:
         print("Kunde inte generera noder.")
         return
 
-    #Hämta spelarens nod
+    # Hämta spelarens nod
     player = None
     for n in nodes:
         if n.item and n.item.entityType == "P":
             player = n
             break
 
-    #Hämta wumpus nod
+    # Hämta wumpus nod
     wumpus = None
     for n in nodes:
         if n.item and n.item.entityType == "W":
