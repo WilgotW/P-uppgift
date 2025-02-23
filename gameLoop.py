@@ -189,7 +189,6 @@ def wumpusAI(nodes, wumpusNode, playerNode, moves):
     return wumpusNode
 
 def bfsPath(nodes, startId, goalId):
-
     queue = [startId]
     visited = {startId}
     parent = {startId: None}
