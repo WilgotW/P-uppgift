@@ -188,7 +188,7 @@ def wumpusAI(nodes, wumpusNode, playerNode, moves):
         return newWumpusNode
     return wumpusNode
 
-def bfsPath(nodes, startId, goalId):
+def bfsPath(nodes, startId, goalId): #breadth fisrt search
     queue = [startId]
     visited = {startId}
     parent = {startId: None}

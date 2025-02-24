@@ -71,7 +71,7 @@ def startGameGui(nodes, player, wumpus):
         messageText.see(tk.END)
 
     def updateRoomLabel():
-        roomLabel.config(text=f"aktuellt rum: {state['player'].id}")
+        roomLabel.config(text=f"Du befinner dig i rum: {state['player'].id}")
 
     def checkGameOver():
         if state["gameOver"]:

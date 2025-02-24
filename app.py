@@ -46,7 +46,6 @@ def main():
         3. Svår
         - Fler hål och fladdermöss
         - 3 pilar
-        - Wumpus rör sig mot spelaren 
         """
     )
     difficulty = input().strip().lower()
