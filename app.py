@@ -82,5 +82,4 @@ def main():
     
     startGame(nodes, player, wumpus)
 
-if __name__ == "__main__":
-    main()
+main()

@@ -129,10 +129,10 @@ def collisionEvent(nodes, collisionType, player, moves):
 def playerShoot(nodes, player, moves):
     print("Du har valt att skjuta en pil.")
     arrowRoomId = player.id #initiera pilen på spelarens nod
-    steps = 3 #antal rum pilen färdas i
+    amount = 3 #antal rum pilen färdas i
 
-    for i in range(steps):
-        print(f"Rum {i+1} av {steps}: Pilen befinner sig i rum {arrowRoomId}.")
+    for i in range(amount):
+        print(f"Rum {i+1} av {amount}: Pilen befinner sig i rum {arrowRoomId}.")
         direction = printArrowDirections()
 
         currentArrowNode = getNode(nodes, arrowRoomId) #nuvarande nod
@@ -170,6 +170,8 @@ def checkSurroundingNodes(nodes, player): #skriv ut alla varningsmeddelande av o
             print(f"{msg} x{count}")
         else:
             print(msg)
+
+
 
 def wumpusAI(nodes, wumpusNode, playerNode, moves):
     if wumpusNode is None or playerNode is None:

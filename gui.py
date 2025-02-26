@@ -105,19 +105,24 @@ def startGameGui(nodes, player, wumpus):
     def processMoveDirection(direction):
         state["moves"] += 1
         targetNodeId = getattr(state["player"], direction)
+
         if targetNodeId is None:
             appendMessage("det finns ingen dörr i den riktningen!")
             return
         collisionItem = getNodeItem(state["nodes"], targetNodeId)
+
         if collisionItem is None:
             appendMessage("rummet i den riktningen existerar inte!")
             return
+        
         if collisionItem.entityType == "N":
             currentNode = getNode(state["nodes"], state["player"].id)
             currentNode.item = Entity(currentNode.id, "N")
+
             newPlayerNode = getNode(state["nodes"], targetNodeId)
             newPlayerNode.item = Entity(newPlayerNode.id, "P")
             state["player"] = newPlayerNode
+
             appendMessage(f"du gick in i rum: {newPlayerNode.id}.")
             updateRoomLabel()
             checkSurroundingNodes()
@@ -129,18 +134,24 @@ def startGameGui(nodes, player, wumpus):
         if collisionType == "W":
             appendMessage("du blev uppäten av wumpus...")
             endGame(False)
+
         elif collisionType == "H":
             appendMessage("du föll ner i ett bottenlöst hål...")
             endGame(False)
+
         elif collisionType == "B":
             appendMessage("fladdermöss lyfter upp dig!")
             currentNode = getNode(state["nodes"], state["player"].id)
             currentNode.item = Entity(currentNode.id, "N")
+
             newNode = getRandomNode(state["nodes"])
+
             while getNodeItem(state["nodes"], newNode.id).entityType != "N":
                 newNode = getRandomNode(state["nodes"])
+
             newNode.item = Entity(newNode.id, "P")
             state["player"] = newNode
+
             appendMessage(f"du landade i rum: {newNode.id}.")
             updateRoomLabel()
             checkSurroundingNodes()
@@ -150,23 +161,28 @@ def startGameGui(nodes, player, wumpus):
             appendMessage("du fick slut på pilar! du förlorade!")
             endGame(False)
             return
+        
         state["arrowsLeft"] -= 1
         state["moves"] += 1
         arrowRoomId = state["player"].id
+
         shootArrowStep(1, arrowRoomId)
 
     def shootArrowStep(step, arrowRoomId):
         if step > 3:
             appendMessage("pilen missade wumpus.")
             return
+        
         appendMessage(f"pilen befinner sig i rum {arrowRoomId} (steg {step}).")
         askDirection("skjut", "välj riktning för pilen:", lambda d: processShootStep(step, arrowRoomId, d))
 
     def processShootStep(step, arrowRoomId, direction):
         currentArrowNode = getNode(state["nodes"], arrowRoomId)
         newArrowRoomId = getattr(currentArrowNode, direction)
+
         appendMessage(f"pilen flyttas till rum: {newArrowRoomId}.")
         roomItem = getNodeItem(state["nodes"], newArrowRoomId)
+
         if roomItem.entityType == "W":
             appendMessage("du träffade wumpus med pilen!")
             endGame(True)
@@ -194,26 +210,23 @@ def startGameGui(nodes, player, wumpus):
         state["gameOver"] = True
         if won:
             recordMessage = ""
-            try:
-                with open("highscore.txt", "r+") as file:
-                    content = file.read().strip()
-                    if content:
-                        highscore = int(content)
+            with open("highscore.txt", "r+") as file:
+                content = file.read().strip()
+                if content:
+                    highscore = int(content)
+                else:
+                    highscore = None
+                if highscore is None or state["moves"] < highscore:
+                    if highscore is not None:
+                        recordMessage = f"du slog ditt tidigare rekord på {highscore} drag!"
                     else:
-                        highscore = None
-                    if highscore is None or state["moves"] < highscore:
-                        if highscore is not None:
-                            recordMessage = f"du slog ditt tidigare rekord på {highscore} drag!"
-                        else:
-                            recordMessage = "detta är ditt första rekord!"
-                        file.seek(0)
-                        file.write(str(state["moves"]))
-                        file.truncate()
-                    else:
-                        recordMessage = f"ditt bästa rekord är {highscore} drag."
-            except Exception as e:
-                recordMessage = "rekord kunde inte uppdateras."
-            msg = f"grattis, du vann på {state['moves']} drag!\n{recordMessage}"
+                        recordMessage = "detta är ditt första rekord!"
+                    file.seek(0)
+                    file.write(str(state["moves"]))
+                    file.truncate()
+                else:
+                    recordMessage = f"ditt bästa rekord är {highscore} drag."
+
         else:
             msg = f"spelet är över! du förlorade efter {state['moves']} drag."
         appendMessage(msg)
@@ -225,11 +238,14 @@ def startGameGui(nodes, player, wumpus):
         win = tk.Toplevel(root)
         win.title(title)
         tk.Label(win, text=prompt).pack(pady=10)
+
         btnFrame = tk.Frame(win)
         btnFrame.pack(pady=5)
+
         def select(direction):
             callback(direction)
             win.destroy()
+            
         tk.Button(btnFrame, text="norr", width=10, command=lambda: select("n")).grid(row=0, column=1, padx=5, pady=5)
         tk.Button(btnFrame, text="väst", width=10, command=lambda: select("w")).grid(row=1, column=0, padx=5, pady=5)
         tk.Button(btnFrame, text="öster", width=10, command=lambda: select("e")).grid(row=1, column=2, padx=5, pady=5)
