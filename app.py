@@ -48,6 +48,7 @@ def main():
         - 3 pilar
         """
     )
+    #välj svårighetsgrad
     difficulty = input().strip().lower()
     while difficulty not in ["1", "2", "3"]:
         print("Fel inmatning, försök igen:")
@@ -74,9 +75,14 @@ def main():
         if n.item and n.item.entityType == "W":
             wumpus = n
             break
-
+            
+    #fråga användaren om dem vill läsa instruktionern
     print("Vill du läsa instruktionerna för hur man spelar? J/N")
     decision = input().strip().lower()
+    while decision not in ["j", "n",]:
+        print("Fel inmatning, försön igen: \n")
+        decision = input().strip().lower()
+        
     if decision == "j":
         gameInstructions()
     
