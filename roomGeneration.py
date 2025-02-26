@@ -10,17 +10,23 @@ def generateNodes(difficulty):
         for direction in ["w", "n", "e", "s"]: #för varje håll i noden
             if getattr(node, direction) == None: #om hållet inte har en nod kopplad
                 availableNodes = []
+                
+                #gå igenom alla noder, lägg till noder som har lediga håll.
                 for nd in nodes:
                     if node.id != nd.id: #hitta en nod som inte är sig själv
-                        freeDirs = [d for d in ["w", "n", "e", "s"] if getattr(nd, d) is None] #hitta håll som är lediga
+                        freeDirs = [dirs for dirs in ["w", "n", "e", "s"] if getattr(nd, dirs) is None] #hitta håll som är lediga
                         if freeDirs:
                             availableNodes.append(nd) #om det finns lediga håll, lägg till noden i listan
-                if availableNodes: #om det finns noder som inte har fått ett håll
+
+                #om det finns noder som inte har fått ett håll
+                if availableNodes:
                     connectionNode = random.choice(availableNodes) #ta en slumpmässig nod från listan av lediga noder
                     freeDirsForNode = [d for d in ["w", "n", "e", "s"] if getattr(node, d) is None] #hitta lediga noder till den ursprungliga noden
+
                     if freeDirsForNode: #om det finns lediga håll för noden
                         nodeDir = random.choice(freeDirsForNode) 
                         freeDirsForConnection = [d for d in ["w", "n", "e", "s"] if getattr(connectionNode, d) is None]
+                        
                         if freeDirsForConnection:
                             connectionDir = random.choice(freeDirsForConnection) #ta ett slumpmässigt ledigt håll från den slumpmässigt tagna noden
                             #sätt värderna
