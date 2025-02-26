@@ -37,10 +37,12 @@ def generateNodes(difficulty):
     placeNodeItems(nodes, difficulty)
     return nodes
 
-randomItem = lambda outcomes, prob: random.choices(outcomes, weights=prob, k=1) #retunerar ett element ur en lista av element med definerade sannolikheter
 
 def placeNodeItems(nodes, difficulty):
+    randomItem = lambda outcomes, prob: random.choices(outcomes, weights=prob, k=1) #retunerar ett element ur en lista av element med definerade sannolikheter
     outcomes = [["B", "Jag hör fladdermöss!"], ["H", "Jag känner vinddrag!"], ["N", ""]]
+    
+    #olika sannolikheter för olika svårighetsgrader
     if difficulty == "1":
         prob = [0.1, 0.05, 0.85]
     elif difficulty == "2":
@@ -51,8 +53,10 @@ def placeNodeItems(nodes, difficulty):
         prob = [0.1, 0.05, 0.85]
     
     #placera spelaren och wumpus först på en slumpmässig plats
+    #spelaren placeras
     playerPos = random.randrange(0, NODE_COUNT)
     nodes[playerPos].item = Entity(nodes[playerPos].id, "P")
+    #wumpus placeras
     wumpusPos = random.randrange(0, NODE_COUNT)
     while wumpusPos == playerPos: #se till att wumpus inte får samma plats som spelaren
         wumpusPos = random.randrange(0, NODE_COUNT)

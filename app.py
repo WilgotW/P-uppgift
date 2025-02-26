@@ -79,6 +79,7 @@ def main():
     #fråga användaren om dem vill läsa instruktionern
     print("Vill du läsa instruktionerna för hur man spelar? J/N")
     decision = input().strip().lower()
+    #fel hantering
     while decision not in ["j", "n",]:
         print("Fel inmatning, försön igen: \n")
         decision = input().strip().lower()

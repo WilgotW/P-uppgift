@@ -6,12 +6,12 @@ import tkinter as tk
 from tkinter import messagebox
 
 def guiLoop(player):
-    #skapar huvudsakligt fönster
+    #skapa fönster
     root = tk.Tk()
     root.title("Wumpus")
     root.geometry("500x400")
 
-    # skapar textruta som visar spelarens rum
+    #skapa textruta som visar spelarens rum
     label = tk.Label(root, text=f"du befinner dig i rum: {player.id}", font=("Arial", 16))
     label.pack(pady=20)
 
@@ -36,7 +36,7 @@ def startGameGui(nodes, player, wumpus):
     #textfält för spelmeddelanden
     messageText = tk.Text(root, height=10, width=70)
     messageText.pack(pady=10)
-    # textruta för spelarens rum
+    #textruta för spelarens rum
     roomLabel = tk.Label(root, text=f"du befinner dig i rum: {player.id}", font=("Arial", 16))
     roomLabel.pack(pady=5)
     
@@ -56,7 +56,7 @@ def startGameGui(nodes, player, wumpus):
     mapButton.grid(row=0, column=2, padx=5)
     quitButton.grid(row=0, column=3, padx=5)
     
-    #alla spelets variabler
+    #alla spelets variabler sparas i state
     state = {
         "arrowsLeft": arrowsLeft,
         "moves": moves,
@@ -66,13 +66,16 @@ def startGameGui(nodes, player, wumpus):
         "gameOver": False,
     }
 
+    #lägger till ett meddelande i textfältet
     def appendMessage(msg):
         messageText.insert(tk.END, msg + "\n")
         messageText.see(tk.END)
 
+    #uppdaterar textfältet som visar spelarens aktuella rum
     def updateRoomLabel():
         roomLabel.config(text=f"Du befinner dig i rum: {state['player'].id}")
 
+    #inaktivera alla knappar om spelet är över
     def checkGameOver():
         if state["gameOver"]:
             moveButton.config(state=tk.DISABLED)
@@ -80,28 +83,36 @@ def startGameGui(nodes, player, wumpus):
             mapButton.config(state=tk.DISABLED)
             quitButton.config(state=tk.DISABLED)
 
+    #kolla noder och skriver ut varningsmeddelanden
     def checkSurroundingNodes():
         messages = []
         for direction in ["n", "e", "s", "w"]:
             nodeId = getattr(state["player"], direction)
             nodeItem = getNodeItem(state["nodes"], nodeId)
+
+            #om noden innehåller ett objekt, lägg till meddelandet
             if nodeItem is not None and nodeItem.entityType != "N":
                 messages.append(nodeItem.entityMessage)
+        
         messageCounts = {}
+        #räknar antalet av dubbletter.
         for msg in messages:
             if msg in messageCounts:
                 messageCounts[msg] += 1
             else:
                 messageCounts[msg] = 1
+        #skriver ut meddelandena med antal av dubbletter
         for msg, count in messageCounts.items():
             if count > 1:
                 appendMessage(f"{msg} x{count}")
             else:
                 appendMessage(msg)
 
+    #be om riktning
     def moveAction():
         askDirection("rör dig", "välj riktning att gå:", processMoveDirection)
 
+    #tar spelarens valda riktning och flyttar spelaren
     def processMoveDirection(direction):
         state["moves"] += 1
         targetNodeId = getattr(state["player"], direction)
@@ -116,9 +127,10 @@ def startGameGui(nodes, player, wumpus):
             return
         
         if collisionItem.entityType == "N":
+            #ta bort spelaren från nuvarande nod
             currentNode = getNode(state["nodes"], state["player"].id)
             currentNode.item = Entity(currentNode.id, "N")
-
+            #sätt spelaren på den nya noden
             newPlayerNode = getNode(state["nodes"], targetNodeId)
             newPlayerNode.item = Entity(newPlayerNode.id, "P")
             state["player"] = newPlayerNode
@@ -127,9 +139,11 @@ def startGameGui(nodes, player, wumpus):
             updateRoomLabel()
             checkSurroundingNodes()
         else:
-            collisionEvent(collisionItem.entityType)
+            
+            collisionEvent(collisionItem.entityType)#kollision 
         checkGameOver()
 
+    #hanterar kollision med objekt
     def collisionEvent(collisionType):
         if collisionType == "W":
             appendMessage("du blev uppäten av wumpus...")
@@ -141,11 +155,13 @@ def startGameGui(nodes, player, wumpus):
 
         elif collisionType == "B":
             appendMessage("fladdermöss lyfter upp dig!")
+            #tar bort spelaren från nuvarande nod
             currentNode = getNode(state["nodes"], state["player"].id)
             currentNode.item = Entity(currentNode.id, "N")
 
             newNode = getRandomNode(state["nodes"])
 
+            #letar efter en tom nod att placera spelaren i
             while getNodeItem(state["nodes"], newNode.id).entityType != "N":
                 newNode = getRandomNode(state["nodes"])
 
@@ -156,6 +172,7 @@ def startGameGui(nodes, player, wumpus):
             updateRoomLabel()
             checkSurroundingNodes()
 
+    #hanterar pil skjutning
     def playerShoot():
         if state["arrowsLeft"] < 1:
             appendMessage("du fick slut på pilar! du förlorade!")
@@ -168,6 +185,7 @@ def startGameGui(nodes, player, wumpus):
 
         shootArrowStep(1, arrowRoomId)
 
+    #flyttar pilen stegvis genom noderna
     def shootArrowStep(step, arrowRoomId):
         if step > 3:
             appendMessage("pilen missade wumpus.")
@@ -176,6 +194,7 @@ def startGameGui(nodes, player, wumpus):
         appendMessage(f"pilen befinner sig i rum {arrowRoomId} (steg {step}).")
         askDirection("skjut", "välj riktning för pilen:", lambda d: processShootStep(step, arrowRoomId, d))
 
+    #pilens rörelse, kontrollerar om pilen träffar wumpus
     def processShootStep(step, arrowRoomId, direction):
         currentArrowNode = getNode(state["nodes"], arrowRoomId)
         newArrowRoomId = getattr(currentArrowNode, direction)
@@ -190,22 +209,26 @@ def startGameGui(nodes, player, wumpus):
         else:
             shootArrowStep(step + 1, newArrowRoomId)
 
+    #visar hela nod listan och alla objekt
     def viewMap():
         mapWin = tk.Toplevel(root)
         mapWin.title("karta")
         text = tk.Text(mapWin, height=10, width=50)
         text.pack()
         cols = 4
+        #loopar igenom noderna och lägger till nod objekt i text
         for i, node in enumerate(state["nodes"]):
             text.insert(tk.END, f"{node.item.entityType} ")
             if (i+1) % cols == 0:
                 text.insert(tk.END, "\n")
         text.config(state=tk.DISABLED)
 
+    #avsluta spelet
     def quitGame():
         appendMessage("spelet är över. du avslutade.")
         endGame(False)
 
+    #avslutar spelet, uppdaterar highscore och visar ett meddelande
     def endGame(won):
         state["gameOver"] = True
         if won:
@@ -234,6 +257,7 @@ def startGameGui(nodes, player, wumpus):
         messagebox.showinfo("spelet är över", msg)
         root.destroy()
 
+    #öppnar en dialogruta för att fråga användaren om en riktning
     def askDirection(title, prompt, callback):
         win = tk.Toplevel(root)
         win.title(title)
@@ -252,5 +276,6 @@ def startGameGui(nodes, player, wumpus):
         tk.Button(btnFrame, text="söder", width=10, command=lambda: select("s")).grid(row=2, column=1, padx=5, pady=5)
         win.grab_set()
 
+    #kollar om det finns varningar direkt vid spelets start
     checkSurroundingNodes()
     root.mainloop()

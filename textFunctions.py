@@ -1,6 +1,6 @@
 import os
 
-def printMenuOptions(arrowsLeft):
+def printMenuOptions(arrowsLeft): #skriv ut alla meny val
     print("\n\n")
     #os.system('clear')
 
@@ -21,7 +21,7 @@ def printMenuOptions(arrowsLeft):
     return decision
 
 
-def printAvaiableDirectios(player):
+def printAvaiableDirectios(player): #skriver ut alla rum och dess håll.
     print(f"\nDu befinner dig i rum: {player.id}")
     print("Härifrån kan man komma till rum: ", end="")
     for dir in ["n", "e", "s", "w"]:
@@ -29,7 +29,7 @@ def printAvaiableDirectios(player):
         print(nodeId, end=", ")
     print()
 
-def printItemMessage(item):
+def printItemMessage(item): #skriver ut objektets varningsmeddelande
     match str(item):
         case "W":
             print("Jag känner lukten av Wumpus!")
@@ -38,7 +38,7 @@ def printItemMessage(item):
         case "H":  
             print("Jag känner vinddrag!")
 
-def printMap(nodes):
+def printMap(nodes): #skiver ut hela nod listan och alla objekt
     os.system('clear')
     for i in range(len(nodes)):
         if i % 4 == 0:
@@ -49,9 +49,10 @@ def printMap(nodes):
     input("...")
     os.system("clear")
 
-def printArrowDirections():
+def printArrowDirections(): #skriver ut alla möjliga håll pilen kan färdas
     print("I vilken riktning ska pilen flyga? (n/e/s/w)")
     direction = input().strip().lower()
+    #fel hantering
     while direction not in ["n", "e", "s", "w"]:
         print("Fel inmatning, försök igen (n/e/s/w):")
         direction = input().strip().lower()
