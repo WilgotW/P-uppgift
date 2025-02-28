@@ -216,11 +216,13 @@ def startGameGui(nodes, player, wumpus):
         text = tk.Text(mapWin, height=10, width=50)
         text.pack()
         cols = 4
-        #loopar igenom noderna och lägger till nod objekt i text
+        #loopen går igenom varje nod med enumerate, detta ger både index och värdet för varje element
         for i, node in enumerate(state["nodes"]):
             text.insert(tk.END, f"{node.item.entityType} ")
+            #ser till att texten blir uppdelad i kolumner och rader
             if (i+1) % cols == 0:
                 text.insert(tk.END, "\n")
+        #textfältet icke redigerbart
         text.config(state=tk.DISABLED)
 
     #avsluta spelet
