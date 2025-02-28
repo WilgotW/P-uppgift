@@ -32,7 +32,7 @@ def gameInstructions():
     )
     input("Tryck Enter för att fortsätta...")
 
-#huvud funktionen av spelet
+#huvudfunktionen av spelet
 def main():
     print("Välj svårighetsgrad:")
     print(

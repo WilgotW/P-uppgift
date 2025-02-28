@@ -5,6 +5,7 @@ from textFunctions import *
 import tkinter as tk
 from tkinter import messagebox
 
+#spelets loop i gui läget.
 def guiLoop(player):
     #skapa fönster
     root = tk.Tk()
@@ -23,7 +24,8 @@ def guiLoop(player):
     
     #startar loop
     root.mainloop()
-
+    
+#startar spelet i gui läget
 def startGameGui(nodes, player, wumpus):
     arrowsLeft = 3 if gameState.difficulty == "3" else 5
     moves = 0

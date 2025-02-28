@@ -3,6 +3,7 @@ from classes import *
 from globalVariables import *
 from nodeFunctions import *
 
+#genererar alla rum och ger slumpmässiga väger mellan dem
 def generateNodes(difficulty):
     #skapar en lista med alla noder utan något innehåll
     nodes = [Node(i + 1, None, None, None, None, None) for i in range(NODE_COUNT)]
@@ -37,7 +38,7 @@ def generateNodes(difficulty):
     placeNodeItems(nodes, difficulty)
     return nodes
 
-
+#placerar spelobjekt i noderna
 def placeNodeItems(nodes, difficulty):
     randomItem = lambda outcomes, prob: random.choices(outcomes, weights=prob, k=1) #retunerar ett element ur en lista av element med definerade sannolikheter
     outcomes = [["B", "Jag hör fladdermöss!"], ["H", "Jag känner vinddrag!"], ["N", ""]]
