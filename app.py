@@ -4,6 +4,7 @@ from gameLoop import startGame
 from globalVariables import *
 from gui import *
 
+#skriver ut spelets instruktioner
 def gameInstructions():
     print(
         """
@@ -31,6 +32,7 @@ def gameInstructions():
     )
     input("Tryck Enter för att fortsätta...")
 
+#huvud funktionen av spelet
 def main():
     print("Välj svårighetsgrad:")
     print(

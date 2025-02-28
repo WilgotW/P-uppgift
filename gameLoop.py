@@ -4,6 +4,7 @@ from textFunctions import *
 from nodeFunctions import *
 from gui import *
 
+#startar spelet och spel loopen.
 def startGame(nodes, player, wumpus):
     #globala variabler
     arrowsLeft = 3 if gameState.difficulty == "3" else 5
@@ -26,6 +27,7 @@ def startGame(nodes, player, wumpus):
                 print("Du hör Wumpus röra sig i kulverterna...")
                 wumpus = wumpusAI(nodes, wumpus, player, moves) #kör wumpus ai och updatera wumpus Entity
 
+#avslutar spelet och sparar poäng i en fil.
 def endGame(won, moves=1):
     gameState.gameOver = True
     if won: #spara resultat i textfil
@@ -41,8 +43,8 @@ def endGame(won, moves=1):
     else:
         print(f"Du förlorade efter: {moves} drag")
 
-      
-def noArrowsLeft(arrowsLeft, moves): #kolla om spelaren har slut på pilar, såfall avsluta spelet
+#kolla om spelaren har slut på pilar, såfall avsluta spelet      
+def noArrowsLeft(arrowsLeft, moves): 
     if arrowsLeft < 1:
         print("Du fick slut på pilar...")
         print("Du förlorade")
@@ -51,6 +53,7 @@ def noArrowsLeft(arrowsLeft, moves): #kolla om spelaren har slut på pilar, såf
         return True
     return False
 
+#frågar spelaren efter input på vad som ska göras
 def playerAction(nodes, player, wumpus, arrowsLeft, moves):
     if noArrowsLeft(arrowsLeft, moves):
         return arrowsLeft, moves, player 
@@ -75,6 +78,7 @@ def playerAction(nodes, player, wumpus, arrowsLeft, moves):
             endGame(False, moves)
     return arrowsLeft, moves, player
 
+#flyttar spelaren till ett nytt rum
 def playerMove(nodes, player, moves):
     directions = ["n", "e", "s", "w"]
     print("Vilket håll? (n/e/s/w)")
@@ -99,6 +103,7 @@ def playerMove(nodes, player, moves):
     else:
         return collisionEvent(nodes, collisionItem.entityType, player, moves) #ifall det fanns ett objekt i önskade hållet
 
+#hanterar kollision mellan spelaren och andra objekt
 def collisionEvent(nodes, collisionType, player, moves):
     input("...")
     match collisionType: #olika fall för kollision med spelaren
@@ -126,6 +131,7 @@ def collisionEvent(nodes, collisionType, player, moves):
     input("...")
     return player  
 
+#hanterar pil-skjut logiken
 def playerShoot(nodes, player, moves):
     print("Du har valt att skjuta en pil.")
     arrowRoomId = player.id #initiera pilen på spelarens nod
@@ -150,7 +156,8 @@ def playerShoot(nodes, player, moves):
     input("...")
     return player
 
-def checkSurroundingNodes(nodes, player): #skriv ut alla varningsmeddelande av objekt i närheten om spelaren
+#kollar närliggande noder/rum om det finns ett objekt i dem rummen. skriv ut alla varningsmeddelande av objekt i närheten om spelaren
+def checkSurroundingNodes(nodes, player):
     messages = []
     for direction in ["n", "e", "s", "w"]: 
         nodeId = getattr(player, direction)
@@ -174,40 +181,46 @@ def checkSurroundingNodes(nodes, player): #skriv ut alla varningsmeddelande av o
 
 #flyttar wumpus mot spelaren med kortaste vägen
 def wumpusAI(nodes, wumpusNode, playerNode, moves):
-    #om wumpus eller spelaren saknas, returnera nuvarande wumpusnod
     if wumpusNode is None or playerNode is None:
         return wumpusNode
+    
     #hitta kortaste vägen från wumpus till spelaren
     path = bfsPath(nodes, wumpusNode.id, playerNode.id)
+
     #om en giltig väg hittas och den innehåller mer än ett steg
     if path and len(path) > 1:
         #väljer nästa nod längs vägen
         nextId = path[1]
+
         #hämtar nuvarande nod och tar bort wumpus från den
         oldNode = getNode(nodes, wumpusNode.id)
         oldNode.item = Entity(oldNode.id, "N")
-        #om nästa nod är spelarens nod, wumpus når spelaren
+        
+        #om nästa nod är spelarens nod så når wumpus spelaren
         if nextId == playerNode.id:
             print("wumpus rörde sig in i ditt rum!")
             endGame(False, moves)
             return wumpusNode
+        
         #flyttar wumpus till nästa nod
         newWumpusNode = getNode(nodes, nextId)
         newWumpusNode.item = Entity(newWumpusNode.id, "W", "du känner lukten av wumpus!")
+
         return newWumpusNode
+    
     return wumpusNode
 
 #hittar kortaste vägen mellan två noder
-def bfsPath(nodes, startId, goalId): #breadth first search
-    #initierar kö med startnod, markerar den som besökt och sätter dess förälder till None
-    queue = [startId]
-    visited = {startId}
-    parent = {startId: None}
+def bfsPath(nodes, startId, goalId): #breadth first search algorithm
+
+    queue = [startId] #initierar kö med startnod
+    visited = {startId} #markerar den som besökt 
+    parent = {startId: None} #lagrar varje nods föregående nod för att kunna bygga en väg. start noden har ingen förgående nod, därför är den None. 
 
     #loopar tills kön är tom
     while queue:
         current = queue.pop(0)
-        #om målnoden hittas, bygg upp vägen genom att följa föräldrar
+        #om målnoden hittas (spelarens nod), bygg upp vägen.
         if current == goalId:
             path = []
             while current is not None:
